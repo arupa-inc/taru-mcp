@@ -1,0 +1,30 @@
+{
+  "name": "taru-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for taru knowledge graph — connect Claude Code or Codex to your team's shared brain",
+  "bin": {
+    "taru-mcp": "./bin/taru-mcp.mjs"
+  },
+  "type": "module",
+  "files": [
+    "bin/",
+    "samples/",
+    "README.md"
+  ],
+  "keywords": [
+    "mcp",
+    "knowledge-graph",
+    "taru",
+    "claude",
+    "codex",
+    "model-context-protocol"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carl/taru-mcp"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}
