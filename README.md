@@ -9,9 +9,7 @@ Zero dependencies. Pure Node.js. Works with any MCP client.
 ### Claude Code
 
 ```bash
-claude mcp add taru -- npx -y taru-mcp \
-  --url https://your-server.com \
-  --token xxv_your_token
+claude mcp add taru -- npx -y taru-mcp --token xxv_your_token
 
 # Copy the agent instructions to your project
 cp node_modules/taru-mcp/samples/CLAUDE.md ./CLAUDE.md
@@ -20,9 +18,7 @@ cp node_modules/taru-mcp/samples/CLAUDE.md ./CLAUDE.md
 ### Codex (OpenAI)
 
 ```bash
-codex mcp add taru -- npx -y taru-mcp \
-  --url https://your-server.com \
-  --token xxv_your_token
+codex mcp add taru -- npx -y taru-mcp --token xxv_your_token
 
 # Copy the agent instructions to your project
 cp node_modules/taru-mcp/samples/AGENTS.md ./AGENTS.md
@@ -43,7 +39,6 @@ These files teach the AI how to use taru tools, classify documents vs opinions, 
 
 | Flag | Env | Default | Description |
 |------|-----|---------|-------------|
-| `--url`, `-u` | `TARU_URL` | `http://localhost:9120` | Taru server URL |
 | `--workspace-id`, `-w` | `TARU_WORKSPACE_ID` | `00000000-...0001` | Workspace UUID |
 | `--token`, `-t` | `TARU_API_TOKEN` | — | API token (`xxv_...`) |
 
