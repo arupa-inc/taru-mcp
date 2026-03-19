@@ -1,6 +1,6 @@
 {
   "name": "taru-mcp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "MCP server for taru knowledge graph — connect Claude Code or Codex to your team's shared brain",
   "bin": {
     "taru-mcp": "./bin/taru-mcp.mjs"
@@ -21,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/carl/taru-mcp"
+    "url": "https://github.com/arupa-inc/taru-mcp"
   },
   "license": "MIT",
   "engines": {

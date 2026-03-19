@@ -9,18 +9,26 @@ Zero dependencies. Pure Node.js. Works with any MCP client.
 ### Claude Code
 
 ```bash
-claude mcp add taru -- npx -y taru-mcp --token xxv_your_token
+# 1. Install the package
+npm install taru-mcp
 
-# Copy the agent instructions to your project
+# 2. Register MCP server
+claude mcp add taru -- npx taru-mcp --token xxv_your_token
+
+# 3. Copy agent instructions to your project
 cp node_modules/taru-mcp/samples/CLAUDE.md ./CLAUDE.md
 ```
 
 ### Codex (OpenAI)
 
 ```bash
-codex mcp add taru -- npx -y taru-mcp --token xxv_your_token
+# 1. Install the package
+npm install taru-mcp
 
-# Copy the agent instructions to your project
+# 2. Register MCP server
+codex mcp add taru -- npx taru-mcp --token xxv_your_token
+
+# 3. Copy agent instructions to your project
 cp node_modules/taru-mcp/samples/AGENTS.md ./AGENTS.md
 ```
 
@@ -34,6 +42,8 @@ The `samples/` directory contains ready-to-use instruction files:
 | `samples/AGENTS.md` | Codex | Drop into your project root |
 
 These files teach the AI how to use taru tools, classify documents vs opinions, handle conflicts, and set confidence scores. **Copy the appropriate file to your project root** after installing.
+
+> **No package.json?** You can also copy the CLAUDE.md / AGENTS.md content directly from the [setup guide](https://taru.arupa.io/docs/setup).
 
 ## Options
 
