@@ -12,7 +12,7 @@ echo "  🌳 taru MCP Setup"
 echo ""
 
 # 1. Ask project folder name
-read -rp "Project folder name: " FOLDER
+read -rp "Project folder name: " FOLDER </dev/tty
 if [ -z "$FOLDER" ]; then
   echo "Error: folder name is required"
   exit 1
@@ -33,7 +33,7 @@ echo "  1) Claude Code"
 echo "  2) Codex"
 echo "  3) Not sure (copies both CLAUDE.md and AGENTS.md)"
 echo ""
-read -rp "Choose [1/2/3]: " CLIENT_CHOICE
+read -rp "Choose [1/2/3]: " CLIENT_CHOICE </dev/tty
 
 case "$CLIENT_CHOICE" in
   1) CLIENT="claude" ;;
@@ -43,7 +43,7 @@ esac
 
 # 3. Ask token (skippable)
 echo ""
-read -rp "Workspace token (xxv_..., press Enter to add later): " TOKEN
+read -rp "Workspace token (xxv_..., press Enter to add later): " TOKEN </dev/tty
 
 # Check npm
 if ! command -v npm &>/dev/null; then

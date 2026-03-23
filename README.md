@@ -6,8 +6,16 @@ Zero dependencies. Pure Node.js. Works with any MCP client.
 
 ## Quick Setup
 
+### macOS / Linux
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/arupa-inc/taru-mcp/main/setup.sh | bash
+```
+
+### Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/arupa-inc/taru-mcp/main/setup.ps1 | iex
 ```
 
 The script will ask you:
@@ -18,6 +26,66 @@ The script will ask you:
 It handles `npm init`, `taru-mcp` installation, agent file (`CLAUDE.md` / `AGENTS.md`) setup, and MCP registration automatically.
 
 Get your workspace token from the taru web console: **Settings > API Key**.
+
+## Manual Setup
+
+If the setup script doesn't work, follow these steps:
+
+### 1. Install
+
+```bash
+mkdir my-project && cd my-project
+npm init -y
+npm install taru-mcp
+```
+
+### 2. Copy agent instructions
+
+```bash
+# For Claude Code
+cp node_modules/taru-mcp/samples/CLAUDE.md ./CLAUDE.md
+
+# For Codex
+cp node_modules/taru-mcp/samples/AGENTS.md ./AGENTS.md
+```
+
+### 3. Register MCP server
+
+```bash
+# Claude Code
+claude mcp add taru -- npx taru-mcp --url https://taru-api.arupa.io --token xxv_your_token
+
+# Codex
+codex mcp add taru -- npx taru-mcp --url https://taru-api.arupa.io --token xxv_your_token
+```
+
+### 4. Or configure MCP manually
+
+If `claude mcp add` doesn't work, create `.mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "taru": {
+      "command": "npx",
+      "args": ["taru-mcp", "--url", "https://taru-api.arupa.io", "--token", "xxv_your_token"]
+    }
+  }
+}
+```
+
+For Claude Code global config (`~/.claude.json`):
+
+```json
+{
+  "mcpServers": {
+    "taru": {
+      "command": "npx",
+      "args": ["taru-mcp", "--url", "https://taru-api.arupa.io", "--token", "xxv_your_token"]
+    }
+  }
+}
+```
 
 ## Tools
 
