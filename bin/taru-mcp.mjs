@@ -39,7 +39,9 @@ Examples:
 }
 
 url = url.replace(/\/+$/, "");
-const endpoint = `${url}/mcp/${workspaceId}`;
+// If workspace ID was explicitly provided, use the scoped endpoint; otherwise use token-based auto endpoint
+const hasExplicitWorkspace = args.some(a => a === "--workspace-id" || a === "-w") || env.TARU_WORKSPACE_ID;
+const endpoint = hasExplicitWorkspace ? `${url}/mcp/${workspaceId}` : `${url}/mcp`;
 const isHttps = endpoint.startsWith("https://");
 
 stderr.write(`[taru-mcp] endpoint: ${endpoint}\n`);
