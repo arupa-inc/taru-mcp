@@ -4,55 +4,20 @@ MCP server for [taru](https://taru.arupa.io) — connect Claude Code or Codex to
 
 Zero dependencies. Pure Node.js. Works with any MCP client.
 
-## Install
-
-### Claude Code
+## Quick Setup
 
 ```bash
-# 1. Install the package
-npm install taru-mcp
-
-# 2. Register MCP server
-claude mcp add taru -- npx taru-mcp --token xxv_your_token
-
-# 3. Copy agent instructions to your project
-cp node_modules/taru-mcp/samples/CLAUDE.md ./CLAUDE.md
+curl -fsSL https://raw.githubusercontent.com/arupa-inc/taru-mcp/main/setup.sh | bash
 ```
 
-### Codex (OpenAI)
+The script will ask you:
+1. **Project folder name** — creates the workspace directory
+2. **AI client** — Claude Code, Codex, or both
+3. **Workspace token** — taru workspace token (`xxv_...`). Can be entered later if you don't have it yet.
 
-```bash
-# 1. Install the package
-npm install taru-mcp
+It handles `npm init`, `taru-mcp` installation, agent file (`CLAUDE.md` / `AGENTS.md`) setup, and MCP registration automatically.
 
-# 2. Register MCP server
-codex mcp add taru -- npx taru-mcp --token xxv_your_token
-
-# 3. Copy agent instructions to your project
-cp node_modules/taru-mcp/samples/AGENTS.md ./AGENTS.md
-```
-
-### Agent instructions
-
-The `samples/` directory contains ready-to-use instruction files:
-
-| File | For | Description |
-|------|-----|-------------|
-| `samples/CLAUDE.md` | Claude Code | Drop into your project root |
-| `samples/AGENTS.md` | Codex | Drop into your project root |
-
-These files teach the AI how to use taru tools, classify documents vs opinions, handle conflicts, and set confidence scores. **Copy the appropriate file to your project root** after installing.
-
-> **No package.json?** You can also copy the CLAUDE.md / AGENTS.md content directly from the [setup guide](https://taru.arupa.io/docs/setup).
-
-## Options
-
-| Flag | Env | Default | Description |
-|------|-----|---------|-------------|
-| `--workspace-id`, `-w` | `TARU_WORKSPACE_ID` | `00000000-...0001` | Workspace UUID |
-| `--token`, `-t` | `TARU_API_TOKEN` | — | API token (`xxv_...`) |
-
-Get your API token from the taru web console: **Workspaces → Members → API Key**.
+Get your workspace token from the taru web console: **Settings > API Key**.
 
 ## Tools
 
@@ -65,8 +30,6 @@ Once connected, these MCP tools are available to the AI:
 | `store_document` | Store a document or opinion with auto-conflict detection |
 | `list_documents` | List all documents in the workspace |
 | `list_conflicts` | View pending knowledge conflicts |
-| `web_search` | Search the web via DuckDuckGo |
-| `web_fetch` | Fetch and extract text from a URL |
 | `rebalance` | Merge similar keywords, clean up orphan nodes |
 
 ## How it works

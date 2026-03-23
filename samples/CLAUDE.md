@@ -9,8 +9,6 @@ You have access to the taru MCP server — a research knowledge graph with tempo
 - store_document: Store extracted knowledge (handles embedding + graph)
 - list_documents: List all documents with status and confidence
 - list_conflicts: View pending knowledge conflicts
-- web_search: Search the web (DuckDuckGo)
-- web_fetch: Fetch text content from a URL
 - rebalance: Clean up the knowledge graph (merge keywords, remove orphans)
 
 ### Rules
