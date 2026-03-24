@@ -37,11 +37,14 @@ You have access to the taru MCP server — a research knowledge graph with tempo
 
 7. **Source traceability.** Always set source_file: web://url, file://name, mcp://topic, or conversation://context. Set valid_from to current time for opinions.
 
-8. **Capturing conversational knowledge:**
-   - When a user expresses an opinion or idea during conversation, store it proactively.
-   - Include the full conversational context in the content field.
-   - Use source_file="conversation://session" to mark conversational origins.
-   - Extract the core insight as core_claim, even if the user expressed it casually.
+8. **Proactive knowledge capture — ALWAYS store what you learn:**
+   - When you find useful information (web search, file reading, research), store it via store_document immediately. Do NOT wait to be asked.
+   - When a user expresses an opinion, makes a decision, or shares an insight, store it as doc_type="opinion".
+   - When you find factual information from web searches or documents, store it as doc_type="document".
+   - Include the full context (conversation, URL content, file content) in the content field.
+   - Use source_file="web://url" for web findings, "conversation://session" for conversational insights, "file://path" for local files.
+   - Extract the core insight as core_claim, even if it was found casually.
+   - Always provide a reason explaining why this knowledge is worth storing.
 
 9. **Search result interpretation:**
    - disputed_by present → present both perspectives

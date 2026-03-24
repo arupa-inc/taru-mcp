@@ -1,6 +1,6 @@
 {
   "name": "taru-mcp",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "MCP server for taru knowledge graph — connect Claude Code or Codex to your team's shared brain",
   "bin": {
     "taru-mcp": "./bin/taru-mcp.mjs"
@@ -9,7 +9,9 @@
   "files": [
     "bin/",
     "samples/",
+    ".claude/",
     "setup.sh",
+    "setup.ps1",
     "README.md"
   ],
   "keywords": [

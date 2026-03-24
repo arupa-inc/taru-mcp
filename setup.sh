@@ -108,6 +108,46 @@ else
   register_mcp "codex"
 fi
 
+# Install Claude Code hooks (search taru first, store after web search)
+if [ "$CLIENT" = "claude" ] || [ "$CLIENT" = "both" ]; then
+  if [ -d "node_modules/taru-mcp/.claude/hooks" ]; then
+    mkdir -p .claude/hooks
+    cp node_modules/taru-mcp/.claude/hooks/*.sh .claude/hooks/
+    chmod +x .claude/hooks/*.sh
+
+    # Write hooks config to .claude/settings.json
+    mkdir -p .claude
+    cat > .claude/settings.json <<'HOOKS'
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-websearch.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/post-stop.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+HOOKS
+    echo "==> Installed taru hooks (search-first + store-after-search)"
+  fi
+fi
+
 echo ""
 echo "  ✅ Setup complete!"
 echo ""
