@@ -90,14 +90,14 @@ register_mcp() {
     token_args=" --token $TOKEN"
   fi
 
-  local mcp_bin="$(pwd)/node_modules/.bin/taru-mcp"
+  local mcp_bin="$(pwd)/node_modules/taru-mcp/bin/taru-mcp.mjs"
 
   if command -v "$cli" &>/dev/null; then
     echo "==> Registering MCP server with $cli..."
-    $cli mcp add taru -- "$mcp_bin" --url "$URL"$token_args
+    $cli mcp add taru -- node "$mcp_bin" --url "$URL"$token_args
   else
     echo "==> '$cli' not found, skipping MCP registration."
-    echo "    Run this later: $cli mcp add taru -- $mcp_bin --url $URL$token_args"
+    echo "    Run this later: $cli mcp add taru -- node $mcp_bin --url $URL$token_args"
   fi
 }
 

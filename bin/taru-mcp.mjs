@@ -1,9 +1,26 @@
 #!/usr/bin/env node
 
+// Suppress all stderr output to prevent Codex MCP transport from closing.
+// Codex monitors stderr and kills the transport if anything is written to it.
+if (!process.env.TARU_DEBUG) {
+  process.stderr.write = () => true;
+}
+process.on('warning', () => {});
+process.on('uncaughtException', () => {});
+process.on('unhandledRejection', () => {});
+
 import { createInterface } from "node:readline";
-import { argv, env, stderr, stdout } from "node:process";
+import { argv, env, stdout } from "node:process";
 import { request as httpsRequest } from "node:https";
 import { request as httpRequest } from "node:http";
+import { appendFileSync } from "node:fs";
+
+const LOG_FILE = process.env.TARU_LOG || "";
+function log(msg) {
+  if (LOG_FILE) {
+    try { appendFileSync(LOG_FILE, `[${new Date().toISOString()}] ${msg}\n`); } catch {}
+  }
+}
 
 // --- Parse args ---
 
@@ -20,10 +37,10 @@ for (let i = 0; i < args.length; i++) {
   } else if ((args[i] === "--token" || args[i] === "-t") && args[i + 1]) {
     token = args[++i];
   } else if (args[i] === "--help" || args[i] === "-h") {
-    stderr.write(`taru-mcp — MCP proxy for taru knowledge graph
+    console.error(`taru-mcp — MCP proxy for taru knowledge graph
 
 Usage:
-  npx taru-mcp [options]
+  node node_modules/taru-mcp/bin/taru-mcp.mjs [options]
 
 Options:
   --workspace-id, -w  Workspace UUID (env: TARU_WORKSPACE_ID)
@@ -31,39 +48,72 @@ Options:
   --help, -h          Show this help
 
 Examples:
-  claude mcp add taru -- npx -y taru-mcp --token tru_...
-  codex mcp add taru -- npx -y taru-mcp --token tru_...
+  claude mcp add taru -- node node_modules/taru-mcp/bin/taru-mcp.mjs --token tru_...
+  codex mcp add taru -- node node_modules/taru-mcp/bin/taru-mcp.mjs --token tru_...
 `);
     process.exit(0);
   }
 }
 
 url = url.replace(/\/+$/, "");
-// If workspace ID was explicitly provided, use the scoped endpoint; otherwise use token-based auto endpoint
 const hasExplicitWorkspace = args.some(a => a === "--workspace-id" || a === "-w") || env.TARU_WORKSPACE_ID;
 const endpoint = hasExplicitWorkspace ? `${url}/mcp/${workspaceId}` : `${url}/mcp`;
 const isHttps = endpoint.startsWith("https://");
 
-// Only log to stderr when debug is enabled (Codex kills transport on stderr output)
-if (env.TARU_DEBUG) stderr.write(`[taru-mcp] endpoint: ${endpoint}\n`);
-
 // --- JSON-RPC proxy: stdin → HTTP POST → stdout ---
+
+let pendingRequests = 0;
+let stdinClosed = false;
 
 const rl = createInterface({ input: process.stdin });
 
 rl.on("line", async (line) => {
   if (!line.trim()) return;
 
+  pendingRequests++;
+  const parsed = safeParse(line);
+  const id = parsed?.id ?? null;
+  const method = parsed?.method || parsed?.params?.name || "unknown";
+  log(`REQ id=${id} method=${method}`);
+
   try {
-    const body = await post(endpoint, line);
+    const { status, body } = await post(endpoint, line);
+    log(`RES id=${id} status=${status} len=${body?.length || 0}`);
 
     // 202 Accepted = notification, no response needed
-    if (body === null) return;
+    if (status === 202) {
+      pendingRequests--;
+      maybeExit();
+      return;
+    }
 
-    stdout.write(body + "\n");
+    // Server returned non-200: wrap in JSON-RPC error
+    if (status < 200 || status >= 300) {
+      const errResp = JSON.stringify({
+        jsonrpc: "2.0",
+        id,
+        error: { code: -32603, message: `server error (${status}): ${body}` },
+      });
+      stdout.write(errResp + "\n");
+      pendingRequests--;
+      maybeExit();
+      return;
+    }
+
+    // Verify response is valid JSON before forwarding
+    const responseJson = safeParse(body);
+    if (responseJson) {
+      stdout.write(body + "\n");
+    } else {
+      const errResp = JSON.stringify({
+        jsonrpc: "2.0",
+        id,
+        error: { code: -32603, message: `invalid server response` },
+      });
+      stdout.write(errResp + "\n");
+    }
   } catch (err) {
-    const parsed = safeParse(line);
-    const id = parsed?.id ?? null;
+    log(`ERR id=${id} ${err.message}`);
     const errResp = JSON.stringify({
       jsonrpc: "2.0",
       id,
@@ -71,39 +121,52 @@ rl.on("line", async (line) => {
     });
     stdout.write(errResp + "\n");
   }
+
+  pendingRequests--;
+  maybeExit();
 });
 
-rl.on("close", () => process.exit(0));
+rl.on("close", () => {
+  stdinClosed = true;
+  maybeExit();
+});
+
+// Only exit after stdin closes AND all pending HTTP requests are done
+function maybeExit() {
+  if (stdinClosed && pendingRequests === 0) {
+    process.exit(0);
+  }
+}
 
 // --- HTTP POST helper ---
 
 function post(targetUrl, body) {
   return new Promise((resolve, reject) => {
-    const parsed = new URL(targetUrl);
-    const requester = isHttps ? httpsRequest : httpRequest;
+    try {
+      const parsed = new URL(targetUrl);
+      const requester = isHttps ? httpsRequest : httpRequest;
 
-    const headers = { "Content-Type": "application/json" };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    const req = requester(
-      parsed,
-      { method: "POST", headers },
-      (res) => {
-        const chunks = [];
-        res.on("data", (chunk) => chunks.push(chunk));
-        res.on("end", () => {
-          if (res.statusCode === 202) {
-            resolve(null);
-            return;
-          }
-          resolve(Buffer.concat(chunks).toString());
-        });
-      }
-    );
+      const req = requester(
+        parsed,
+        { method: "POST", headers },
+        (res) => {
+          const chunks = [];
+          res.on("data", (chunk) => chunks.push(chunk));
+          res.on("end", () => {
+            resolve({ status: res.statusCode, body: Buffer.concat(chunks).toString() });
+          });
+        }
+      );
 
-    req.on("error", reject);
-    req.write(body);
-    req.end();
+      req.on("error", (err) => reject(err));
+      req.write(body);
+      req.end();
+    } catch (err) {
+      reject(err);
+    }
   });
 }
 

@@ -53,10 +53,10 @@ cp node_modules/taru-mcp/samples/AGENTS.md ./AGENTS.md
 
 ```bash
 # Claude Code
-claude mcp add taru -- ./node_modules/.bin/taru-mcp --token xxv_your_token
+claude mcp add taru -- node node_modules/taru-mcp/bin/taru-mcp.mjs --token xxv_your_token
 
 # Codex
-codex mcp add taru -- ./node_modules/.bin/taru-mcp --token xxv_your_token
+codex mcp add taru -- node node_modules/taru-mcp/bin/taru-mcp.mjs --token xxv_your_token
 ```
 
 ### 4. Or configure MCP manually
@@ -67,7 +67,7 @@ If `claude mcp add` doesn't work, create `.mcp.json` in your project root:
 {
   "mcpServers": {
     "taru": {
-      "command": "./node_modules/.bin/taru-mcp",
+      "command": "node node_modules/taru-mcp/bin/taru-mcp.mjs",
       "args": ["--token", "xxv_your_token"]
     }
   }
@@ -80,7 +80,7 @@ For Claude Code global config (`~/.claude.json`):
 {
   "mcpServers": {
     "taru": {
-      "command": "./node_modules/.bin/taru-mcp",
+      "command": "node node_modules/taru-mcp/bin/taru-mcp.mjs",
       "args": ["--token", "xxv_your_token"]
     }
   }
