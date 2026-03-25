@@ -27,12 +27,12 @@ Usage:
 
 Options:
   --workspace-id, -w  Workspace UUID (env: TARU_WORKSPACE_ID)
-  --token, -t         API token (env: TARU_API_TOKEN)
+  --token, -t         Workspace token (env: TARU_API_TOKEN)
   --help, -h          Show this help
 
 Examples:
-  claude mcp add taru -- npx -y taru-mcp --token xxv_...
-  codex mcp add taru -- npx -y taru-mcp --token xxv_...
+  claude mcp add taru -- npx -y taru-mcp --token tru_...
+  codex mcp add taru -- npx -y taru-mcp --token tru_...
 `);
     process.exit(0);
   }
@@ -44,7 +44,8 @@ const hasExplicitWorkspace = args.some(a => a === "--workspace-id" || a === "-w"
 const endpoint = hasExplicitWorkspace ? `${url}/mcp/${workspaceId}` : `${url}/mcp`;
 const isHttps = endpoint.startsWith("https://");
 
-stderr.write(`[taru-mcp] endpoint: ${endpoint}\n`);
+// Only log to stderr when debug is enabled (Codex kills transport on stderr output)
+if (env.TARU_DEBUG) stderr.write(`[taru-mcp] endpoint: ${endpoint}\n`);
 
 // --- JSON-RPC proxy: stdin → HTTP POST → stdout ---
 

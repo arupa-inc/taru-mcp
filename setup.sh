@@ -92,10 +92,10 @@ register_mcp() {
 
   if command -v "$cli" &>/dev/null; then
     echo "==> Registering MCP server with $cli..."
-    $cli mcp add taru -- npx taru-mcp --url "$URL"$token_args
+    $cli mcp add taru -- npx -y taru-mcp --url "$URL"$token_args
   else
     echo "==> '$cli' not found, skipping MCP registration."
-    echo "    Run this later: $cli mcp add taru -- npx taru-mcp --url $URL$token_args"
+    echo "    Run this later: $cli mcp add taru -- npx -y taru-mcp --url $URL$token_args"
   fi
 }
 
